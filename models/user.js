@@ -21,6 +21,19 @@ module.exports = class User extends Sequelize.Model {
         type: Sequelize.STRING(30),
         allowNull: true,
       },
+      phothUrl: {
+        type: Sequelize.STRING(200),
+        allowNull: true,
+      },
+      roomClose: {
+        type: Boolean,
+        defaultValue: true,
+      },
+      roomDelete: {
+        type: Boolean,
+        defaultValue: true,
+      },
+      
     }, {
       sequelize,
       timestamps: true,
@@ -32,4 +45,21 @@ module.exports = class User extends Sequelize.Model {
       collate: 'utf8_general_ci',
     });
   }
-};
+
+  static associate(db) {
+    db.User.hasMany(db.Post);
+    db.User.belongsToMany(db.User, {
+      foreignKey: 'followingId',
+      as: 'Followers',
+      through: 'Follow',
+    });
+    db.User.belongsToMany(db.User, {
+      foreignKey: 'followerId',
+      as: 'Followings',
+      through: 'Follow',
+    });
+  }
+  static associate(db) {
+    db.User.hasMany(db.DiaryRoom, { foreignKey: "admin", sourceKey: "id" });
+  }
+};  
