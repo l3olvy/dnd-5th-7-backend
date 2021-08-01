@@ -15,21 +15,14 @@ module.exports = class DiaryRoom extends Sequelize.Model {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      thumbnailUrl: {
-        type: Sequelize.STRING(200),
-        allowNull: true,
-      },
       lock: {
-        type: Boolean,
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
         defaultValue: false,
       },
       close: {
-        type: Boolean,
-        defaultValue: false,
-
-      },
-      star: {
-        type: Boolean,
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
         defaultValue: false,
       },
     }, {
@@ -45,10 +38,14 @@ module.exports = class DiaryRoom extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Post.belongsTo(db.User, {
-        foreignKey: 'admin', targetKey: "id"
+    db.DiaryRoom.hasMany(db.Member, { 
+        foreignKey: "room_id", sourceKey: "id" 
     });
-    db.DiaryRoom.hasMany(db.DiaryRoom, { foreignKey: "admin", sourceKey: "id" });
-    db.DiaryRoom.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
+    db.DiaryRoom.hasMany(db.DiaryContent, { 
+        foreignKey: "room_id", sourceKey: "id" 
+    });
+    db.DiaryRoom.hasMany(db.Bookmark, { 
+      foreignKey: "room_id", sourceKey: "id" 
+  });
   }
 };
