@@ -7,6 +7,7 @@ const session = require('express-session');
 const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const passport = require('passport');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -24,6 +25,11 @@ nunjucks.configure('views', {
 	express: app,
 	watch: true,
 });
+
+app.use(cors({
+	origin: true,
+	credentials: true
+}));
 
 sequelize.sync({ forTce: false })
   .then(() => {
