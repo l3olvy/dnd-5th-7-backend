@@ -227,6 +227,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,sublimetext,node
-
-/* 우리 프로젝트에 노출되면 안되는 정보가 있는 폴더 */
-config/
