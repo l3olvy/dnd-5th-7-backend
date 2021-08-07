@@ -29,7 +29,7 @@ nunjucks.configure('views', {
 });
 
 app.use(cors({
-	origin: "https://dnd-5th-7-frontend.vercel.app",
+	origin: "https://dnd-5th-7-frontend-3ugas3gw7-dndtido.vercel.app",
 	credentials: true
 }));
 
