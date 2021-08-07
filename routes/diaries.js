@@ -8,14 +8,14 @@ const router = express.Router();
 
 //router.post('/:diaryIdx', isLoggedIn, diariesController.insertDiary);
 
-  router.post("/:diaryIdx", isLoggedIn, (req, res) => {
+router.post("/", isLoggedIn, (req, res) => {
 	const id = req.user.id;
-	const title = req.body.title;	
-    console.log("아이디 : ", id);
-    res.send('good');
+	const title = req.body.title;
+	console.log("타이틀 : ", title);
+	res.send('good');
 	/*const sqlQuery = "INSERT INTO DND57DB.diaryRoom (title) VALUES (?)"
-    +"INSERT INTO DND57DB.member (admin,user_id) VALUES (?,?);";
-	connection.query(sqlQuery, [title, id, id], (err, result)=>{
+		+ "INSERT INTO DND57DB.member (admin,user_id) VALUES (?,?);";
+	connection.query(sqlQuery, [title, id, id], (err, result) => {
 		res.send('good');
 	})*/
 });

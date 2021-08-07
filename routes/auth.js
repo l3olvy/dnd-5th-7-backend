@@ -12,7 +12,7 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
   res.redirect('http://localhost:8080/main');
-  
+
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
@@ -22,8 +22,8 @@ router.get('/logout', isLoggedIn, (req, res) => {
 });
 
 router.get('/id', isLoggedIn, (req, res) => {
-  if(req.user){
-    res.send({id : req.user.id});
+  if (req.user) {
+    res.send({ id: req.user.id });
   }
 });
 
