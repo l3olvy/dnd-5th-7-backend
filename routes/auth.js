@@ -11,7 +11,7 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
-  res.redirect('http://localhost:8080/main');
+  res.redirect('https://dnd-5th-7-frontend.vercel.app/main');
 
 });
 
