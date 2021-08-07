@@ -14,12 +14,14 @@ dotenv.config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
+const diariesRouter = require('./routes/diaries');
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 
 const app = express();
 passportConfig(); // 패스포트 설정
 app.set('port', process.env.PORT || 3000);
+
 app.set('view engine', 'html');
 nunjucks.configure('views', {
 	express: app,
@@ -27,7 +29,7 @@ nunjucks.configure('views', {
 });
 
 app.use(cors({
-	origin: true,
+	origin: "http://localhost:8080",
 	credentials: true
 }));
 
@@ -59,6 +61,8 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/diaries', diariesRouter);
+
 
 app.use((req, res, next) => {
 	const error =  new Error(`${req.method} ${req.url} 라우터가 없습니다.`);
