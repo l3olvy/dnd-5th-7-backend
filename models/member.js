@@ -27,11 +27,11 @@ module.exports = class Member extends Sequelize.Model {
 
   static associate(db) {
     db.Member.belongsTo(db.User, {
-        foreignKey: 'user_id', targetKey: "id",
+      foreignKey: 'user_id', targetKey: "id",
     });
     db.Member.belongsTo(db.DiaryRoom, {
-        foreignKey: 'room_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'room_id', targetKey: "id",
+      onDelete: 'CASCADE',
     });
   }
 };

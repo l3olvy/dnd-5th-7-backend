@@ -8,6 +8,20 @@ const DiaryRoom = require('../models/diaryRoom');
 const Member = require('../models/member');
 //const diariesController = require('../controllers/diaries.ctrl');
 
+router.get("/:dairyIdx", isLoggedIn, async (req, res, next) => {
+	try {
+		const room = await DiaryRoom.findAll({
+			where: {
+				id: req.params.dairyIdx
+			}
+		})
+		res.status(201).json(room);
+	} catch (err) {
+		console.error(err);
+		next(err);
+	}
+});
+
 router.post("/", isLoggedIn, async (req, res, next) => {
 	try {
 		const room = await DiaryRoom.create({
@@ -20,25 +34,48 @@ router.post("/", isLoggedIn, async (req, res, next) => {
 				user_id: req.user.id,
 				room_id: room.id,
 			})
-			//room.addMember(member);
-			console.log("멤버생성 정보 : ", member);
 		});
-		console.log("방생성 정보 : ", room);
-
 		res.status(201).json(room);
 	} catch (err) {
 		console.error(err);
 		next(err);
 	}
-	/*const id = req.user.id;
-	const title = req.body.title;
-	console.log("타이틀 : ", title);
-
-	res.send('good');
-	const sqlQuery = "INSERT INTO DND57DB.diaryRoom (title) VALUES (?)"
-		+ "INSERT INTO DND57DB.member (admin,user_id) VALUES (?,?);";
-	connection.query(sqlQuery, [title, id, id], (err, result) => {
-		res.send('good');
-	})*/
 });
+
+router.patch("/:dairyIdx", async (req, res, next) => {
+	try {
+		DiaryRoom.update(
+			{
+				mood: req.body.mood,
+				date: req.body.date,
+				title: req.body.title,
+				lock: req.body.lock,
+				close: req.body.close
+			}, {
+			where: { id: req.params.dairyIdx },
+		});
+		res.send("수정됨");
+	} catch (err) {
+		console.error(err);
+		next(err);
+	}
+});
+
+router.delete("/:dairyIdx", async (req, res, next) => {
+	try {
+		DiaryRoom.destroy({
+			where: {
+				id: req.params.dairyIdx
+			}
+		});
+		res.send("방 지워짐");
+	} catch (err) {
+		console.error(err);
+		next(err);
+	}
+});
+
+
+
+
 module.exports = router;
