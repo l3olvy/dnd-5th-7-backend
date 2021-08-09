@@ -31,7 +31,8 @@ module.exports = class Member extends Sequelize.Model {
     });
     db.Member.belongsTo(db.DiaryRoom, {
       foreignKey: 'room_id', targetKey: "id",
-      onDelete: 'CASCADE',
+      onDelete: 'cascade',
+      hooks: true,
     });
   }
 };

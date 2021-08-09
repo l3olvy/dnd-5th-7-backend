@@ -8,6 +8,7 @@ const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use(cors({
 	credentials: true
 }));
 
+app.use(bodyParser.json());
 sequelize.sync({ forTce: false })
 	.then(() => {
 		console.log('데이터베이스 연결 성공');

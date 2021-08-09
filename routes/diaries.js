@@ -8,7 +8,7 @@ const DiaryRoom = require('../models/diaryRoom');
 const Member = require('../models/member');
 //const diariesController = require('../controllers/diaries.ctrl');
 
-router.get("/:dairyIdx", isLoggedIn, async (req, res, next) => {
+router.get("/:dairyIdx", async (req, res, next) => {
 	try {
 		const room = await DiaryRoom.findAll({
 			where: {
@@ -22,7 +22,7 @@ router.get("/:dairyIdx", isLoggedIn, async (req, res, next) => {
 	}
 });
 
-router.post("/", isLoggedIn, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
 	try {
 		const room = await DiaryRoom.create({
 			mood: req.body.mood,

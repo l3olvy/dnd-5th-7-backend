@@ -22,12 +22,14 @@ module.exports = class Bookmark extends Sequelize.Model {
 
   static associate(db) {
     db.Bookmark.belongsTo(db.User, {
-        foreignKey: 'user_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'user_id', targetKey: "id",
+      onDelete: 'cascade',
+      hooks: true,
     });
     db.Bookmark.belongsTo(db.DiaryRoom, {
-        foreignKey: 'room_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'room_id', targetKey: "id",
+      onDelete: 'cascade',
+      hooks: true,
     });
   }
 };
