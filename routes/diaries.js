@@ -44,17 +44,32 @@ router.post("/", async (req, res, next) => {
 
 router.patch("/:dairyIdx", async (req, res, next) => {
 	try {
-		DiaryRoom.update(
-			{
-				mood: req.body.mood,
-				date: req.body.date,
-				title: req.body.title,
-				lock: req.body.lock,
-				close: req.body.close
-			}, {
-			where: { id: req.params.dairyIdx },
-		});
-		res.send("수정됨");
+		const diaryIdx = req.params.dairyIdx;
+		const admin = await Member.findOne({
+			attributes: ['admin'],
+			where: {
+				room_id: diaryIdx,
+				user_id: req.user.id,
+			}
+		}).then((admin) => {
+			if (admin.dataValues.admin === true) {
+				DiaryRoom.update(
+					{
+						mood: req.body.mood,
+						date: req.body.date,
+						title: req.body.title,
+						lock: req.body.lock,
+						close: req.body.close
+					}, {
+					where: { id: diaryIdx },
+				});
+				res.send("수정됨");
+			}
+			else {
+				res.send("수정권한 없음");
+			}
+		})
+
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -63,12 +78,27 @@ router.patch("/:dairyIdx", async (req, res, next) => {
 
 router.delete("/:dairyIdx", async (req, res, next) => {
 	try {
-		DiaryRoom.destroy({
+		const diaryIdx = req.params.dairyIdx;
+		const admin = await Member.findOne({
+			attributes: ['admin'],
 			where: {
-				id: req.params.dairyIdx
+				room_id: diaryIdx,
+				user_id: req.user.id,
 			}
-		});
-		res.send("방 지워짐");
+		}).then((admin) => {
+			if (admin.dataValues.admin === true) {
+				DiaryRoom.destroy({
+					where: {
+						id: req.params.dairyIdx
+					}
+				});
+				res.send("방 지워짐");
+			}
+			else {
+				res.send("삭제권한 없음");
+			}
+		})
+
 	} catch (err) {
 		console.error(err);
 		next(err);
