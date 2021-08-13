@@ -20,11 +20,6 @@ module.exports = class DiaryRoom extends Sequelize.Model {
         allowNull: false,
         defaultValue: false,
       },
-      close: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
     }, {
       sequelize,
       timestamps: false,
@@ -38,14 +33,18 @@ module.exports = class DiaryRoom extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.DiaryRoom.hasMany(db.Member, { 
-        foreignKey: "room_id", sourceKey: "id" 
+    db.DiaryRoom.hasMany(db.Member, {
+      foreignKey: "room_id", sourceKey: "id"
     });
-    db.DiaryRoom.hasMany(db.DiaryContent, { 
-        foreignKey: "room_id", sourceKey: "id" 
+    db.DiaryRoom.hasMany(db.DiaryContent, {
+      foreignKey: "room_id", sourceKey: "id"
     });
-    db.DiaryRoom.hasMany(db.Bookmark, { 
-      foreignKey: "room_id", sourceKey: "id" 
-  });
+    db.DiaryRoom.hasMany(db.Bookmark, {
+      foreignKey: "room_id", sourceKey: "id"
+    });
+    db.DiaryRoom.belongsTo(db.User, {
+      foreignKey: 'user_id', targetKey: "id",
+      onDelete: 'set null'
+    });
   }
 };
