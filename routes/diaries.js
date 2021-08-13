@@ -105,7 +105,4 @@ router.delete("/:dairyIdx", async (req, res, next) => {
 	}
 });
 
-
-
-
 module.exports = router;
