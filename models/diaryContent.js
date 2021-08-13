@@ -25,12 +25,11 @@ module.exports = class DiaryContent extends Sequelize.Model {
 
   static associate(db) {
     db.DiaryContent.belongsTo(db.User, {
-      foreignKey: 'user_id', targetKey: "id"
+        foreignKey: 'user_id', targetKey: "id"
     });
     db.DiaryContent.belongsTo(db.DiaryRoom, {
-      foreignKey: 'room_id', targetKey: "id",
-      onDelete: 'cascade',
-      hooks: true,
+        foreignKey: 'room_id', targetKey: "id",
+        onDelete: 'CASCADE',
     });
   }
 };

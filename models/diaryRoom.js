@@ -38,14 +38,14 @@ module.exports = class DiaryRoom extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.DiaryRoom.hasMany(db.Member, {
-      foreignKey: "room_id", sourceKey: "id",
+    db.DiaryRoom.hasMany(db.Member, { 
+        foreignKey: "room_id", sourceKey: "id" 
     });
-    db.DiaryRoom.hasMany(db.DiaryContent, {
-      foreignKey: "room_id", sourceKey: "id"
+    db.DiaryRoom.hasMany(db.DiaryContent, { 
+        foreignKey: "room_id", sourceKey: "id" 
     });
-    db.DiaryRoom.hasMany(db.Bookmark, {
-      foreignKey: "room_id", sourceKey: "id"
-    });
+    db.DiaryRoom.hasMany(db.Bookmark, { 
+      foreignKey: "room_id", sourceKey: "id" 
+  });
   }
 };
