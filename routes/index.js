@@ -17,6 +17,7 @@ router.get('/', function (req, res) {
 router.use('/user', require('./user'));
 router.use('/auth', require('./auth'));
 router.use('/diaries', require('./diaries'));
+router.use('/contents', require('./contents'));
 /*
 router.get('/main',(req, res) => {
   if(req.user){

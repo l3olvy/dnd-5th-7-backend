@@ -6,6 +6,7 @@ module.exports = {
     uploadImage: async (req, res) => {
         console.log(req.file);
         const image = req.file.location;
+        console.log("이미지:", image);
         if (image === undefined) {
             return res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다."));
         }
