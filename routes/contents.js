@@ -96,7 +96,7 @@ router.patch("/:contentIdx", upload.single('imgUrl'), async (req, res, next) => 
                 res.status(201).send("이미지 수정 성공");
             })
         } else {
-            DiaryContent.create({
+            DiaryContent.update({
                 text: req.body.text,
             },
                 { where: { id: req.params.contentIdx } });
