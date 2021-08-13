@@ -5,11 +5,11 @@ module.exports = class DiaryContent extends Sequelize.Model {
     return super.init({
       text: {
         type: Sequelize.STRING(500),
-        allowNull: false,
+        allowNull: true,
       },
       imgUrl: {
         type: Sequelize.STRING(200),
-        allowNull: false,
+        allowNull: true,
       },
     }, {
       sequelize,

@@ -16,6 +16,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
 const diariesRouter = require('./routes/diaries');
+const contentsRouter = require('./routes/contents');
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 
@@ -64,6 +65,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/diaries', diariesRouter);
+app.use('/contents', contentsRouter);
 
 
 app.use((req, res, next) => {
