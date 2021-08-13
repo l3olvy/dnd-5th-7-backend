@@ -13,10 +13,9 @@ router.get('/', function(req, res, next) {
 });
 router.use('/user', require('./user'));
 router.use('/auth', require('./auth'));
-
-
 router.get('/main', isLoggedIn, (req, res) => {
   res.render('main', { title: '내 정보' });
-});
+router.use('/diaries', require('./diaries'));
+router.use('/contents', require('./contents'));
 
 module.exports = router;
