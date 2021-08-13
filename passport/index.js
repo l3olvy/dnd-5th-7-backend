@@ -12,6 +12,7 @@ module.exports = () => {
       .then(user => done(null, user))
       .catch(err => done(err));
   });
+  console.log("de 실행됨");
 
   kakao();
 };
