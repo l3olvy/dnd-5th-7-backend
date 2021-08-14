@@ -33,6 +33,5 @@ DiaryRoom.associate(db);
 DiaryContent.associate(db);
 Member.associate(db);
 Bookmark.associate(db);
-Notice.associate(db);
 
 module.exports = db;
