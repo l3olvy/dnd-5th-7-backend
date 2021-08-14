@@ -11,7 +11,6 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
-  console.log("res 값 : ", res);
   res.redirect(`${process.env.FRONT_URL}/main`);
 });
 

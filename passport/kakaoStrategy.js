@@ -7,7 +7,7 @@ const User = require('../models/user');
 module.exports = () => {
   passport.use(new KakaoStrategy({
     clientID: process.env.KAKAO_ID,
-    callbackURL: 'https://tido-diary.herokuapp.com/auth/kakao/callback',
+    callbackURL: '/auth/kakao/callback',
   }, async (accessToken, refreshToken, _, done) => {
 
     const profile = await axios.get('https://kapi.kakao.com/v2/user/me', {
@@ -22,14 +22,6 @@ module.exports = () => {
         where: { snsId: profile.data.id, },
       });
       if (exUser) {
-        if (profile.data.kakao_account.profile.profile_image_url !== exUser.phothUrl) {
-          User.update({
-            phothUrl: profile.data.kakao_account.profile.profile_image_url,
-          },
-            {
-              where: { snsId: profile.data.id, }
-            })
-        }
         done(null, exUser);
       } else {
         const newUser = await User.create({

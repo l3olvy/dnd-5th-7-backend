@@ -58,8 +58,8 @@ app.use(session({
 	secret: process.env.COOKIE_SECRET,
 	cookie: {
 		httpOnly: true,
-		sameSite: 'none',
-		secure: true,
+		//sameSite: 'none',
+		secure: false,
 	},
 }));
 app.use(passport.initialize());
