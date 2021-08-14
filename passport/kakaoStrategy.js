@@ -7,7 +7,7 @@ const User = require('../models/user');
 module.exports = () => {
   passport.use(new KakaoStrategy({
     clientID: process.env.KAKAO_ID,
-    callbackURL: 'https://tido-diary.herokuapp.com/auth/kakao/callback',
+    callbackURL: 'https://dnd-5th-7-frontend-eight.vercel.app/auth/kakao/callback',
   }, async (accessToken, refreshToken, _, done) => {
 
     const profile = await axios.get('https://kapi.kakao.com/v2/user/me', {
