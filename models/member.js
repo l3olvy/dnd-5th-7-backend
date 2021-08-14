@@ -8,10 +8,9 @@ module.exports = class Member extends Sequelize.Model {
         allowNull: false,
         defaultValue: false,
       },
-      invite: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+      guest_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
     }, {
       sequelize,
@@ -27,11 +26,12 @@ module.exports = class Member extends Sequelize.Model {
 
   static associate(db) {
     db.Member.belongsTo(db.User, {
-        foreignKey: 'user_id', targetKey: "id",
+      foreignKey: 'user_id', targetKey: "id",
+      onDelete: 'set null'
     });
     db.Member.belongsTo(db.DiaryRoom, {
-        foreignKey: 'room_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'room_id', targetKey: "id",
+      onDelete: 'cascade',
     });
   }
 };

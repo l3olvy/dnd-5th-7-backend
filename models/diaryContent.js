@@ -5,11 +5,11 @@ module.exports = class DiaryContent extends Sequelize.Model {
     return super.init({
       text: {
         type: Sequelize.STRING(500),
-        allowNull: false,
+        allowNull: true,
       },
       imgUrl: {
         type: Sequelize.STRING(200),
-        allowNull: false,
+        allowNull: true,
       },
     }, {
       sequelize,
@@ -25,11 +25,12 @@ module.exports = class DiaryContent extends Sequelize.Model {
 
   static associate(db) {
     db.DiaryContent.belongsTo(db.User, {
-        foreignKey: 'user_id', targetKey: "id"
+      foreignKey: 'user_id', targetKey: "id",
+      onDelete: 'set null',
     });
     db.DiaryContent.belongsTo(db.DiaryRoom, {
-        foreignKey: 'room_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'room_id', targetKey: "id",
+      onDelete: 'cascade',
     });
   }
 };

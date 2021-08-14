@@ -7,11 +7,6 @@ module.exports = class User extends Sequelize.Model {
         type: Sequelize.STRING(15),
         allowNull: false,
       },
-      email: {
-        type: Sequelize.STRING(40),
-        allowNull: true,
-        unique: true,
-      },
       snsId: {
         type: Sequelize.STRING(30),
         allowNull: false,
@@ -45,5 +40,6 @@ module.exports = class User extends Sequelize.Model {
     db.User.hasMany(db.Member, { foreignKey: "user_id", sourceKey: "id" });
     db.User.hasMany(db.DiaryContent, { foreignKey: "user_id", sourceKey: "id" });
     db.User.hasMany(db.Bookmark, { foreignKey: "user_id", sourceKey: "id" });
+    db.User.hasMany(db.DiaryRoom, { foreignKey: "user_id", sourceKey: "id" });
   }
-};  
+};

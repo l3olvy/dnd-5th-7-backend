@@ -8,13 +8,18 @@ const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 dotenv.config();
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/user');
+const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const diariesRouter = require('./routes/diaries');
+const noticesRouter = require('./routes/notices');
+const contentsRouter = require('./routes/contents');
+const mainRouter = require('./routes/main');
+const uploadsRouter = require('./routes/uploads');
 const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 
@@ -33,6 +38,7 @@ app.use(cors({
 	credentials: true
 }));
 
+app.use(bodyParser.json());
 sequelize.sync({ forTce: false })
 	.then(() => {
 		console.log('데이터베이스 연결 성공');
@@ -62,7 +68,10 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/diaries', diariesRouter);
-
+app.use('/contents', contentsRouter);
+app.use('/notices', noticesRouter);
+app.use('/main', mainRouter);
+app.use('/uploads', uploadsRouter);
 
 app.use((req, res, next) => {
 	const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

@@ -3,11 +3,6 @@ const Sequelize = require('sequelize');
 module.exports = class Bookmark extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      mark: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
     }, {
       sequelize,
       timestamps: false,
@@ -22,12 +17,12 @@ module.exports = class Bookmark extends Sequelize.Model {
 
   static associate(db) {
     db.Bookmark.belongsTo(db.User, {
-        foreignKey: 'user_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'user_id', targetKey: "id",
+      onDelete: 'cascade',
     });
     db.Bookmark.belongsTo(db.DiaryRoom, {
-        foreignKey: 'room_id', targetKey: "id",
-        onDelete: 'CASCADE',
+      foreignKey: 'room_id', targetKey: "id",
+      onDelete: 'cascade',
     });
   }
 };

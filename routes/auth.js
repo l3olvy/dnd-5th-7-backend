@@ -11,14 +11,15 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
-  res.redirect('https://dnd-5th-7-frontend-3ugas3gw7-dndtido.vercel.app/main');
-
+  res.redirect('http://localhost:8080/main');
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
   req.logout();
-  req.session.destroy();
-  res.redirect('/');
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid');
+    res.redirect('http://localhost:8080');
+  });
 });
 
 router.get('/id', isLoggedIn, (req, res) => {

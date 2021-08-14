@@ -7,22 +7,16 @@ router.use((req, res, next) => {
   next();
 });
 
-/* GET home page. */
-/*router.get('/', function(req, res, next) {
-  res.render('main', { title: 'Express' });
-});*/
 router.get('/', function (req, res) {
   res.send('Hello World!');
 });
-router.use('/user', require('./user'));
+
+router.use('/users', require('./users'));
 router.use('/auth', require('./auth'));
 router.use('/diaries', require('./diaries'));
-/*
-router.get('/main',(req, res) => {
-  if(req.user){
-    console.log(req.user.nick);
-    res.send({id : req.user.nick});
-  }
-});
-*/
+router.use('/contents', require('./contents'));
+router.use('/main', require('./main'));
+router.use('/uploads', require('./uploads'));
+router.use('/notices', require('./notices'));
+
 module.exports = router;

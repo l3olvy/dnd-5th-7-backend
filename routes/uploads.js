@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const UserController = require('../controllers/user');
+const UserController = require('../controllers/uploads');
 const upload = require('../modules/multer');
 
 router.post('/profile', upload.single('image'), UserController.uploadImage);
