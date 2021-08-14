@@ -61,6 +61,7 @@ app.use(session({
 		sameSite: 'none',
 		httpOnly: true,
 		secure: false,
+		domain: '.dnd-5th-7-frontend-eight.vercel.app',
 	},
 }));
 app.use(passport.initialize());
