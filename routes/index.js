@@ -17,5 +17,6 @@ router.use('/diaries', require('./diaries'));
 router.use('/contents', require('./contents'));
 router.use('/main', require('./main'));
 router.use('/uploads', require('./uploads'));
+router.use('/notices', require('./notices'));
 
 module.exports = router;

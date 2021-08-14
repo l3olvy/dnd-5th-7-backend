@@ -13,6 +13,34 @@ const Op = sequelize.Op;
 
 //const diariesController = require('../controllers/diaries.ctrl');
 
+router.get("/calender", async (req, res, next) => {
+    try {
+        const date = req.body.date;
+        const calender = await Member.findAll({
+            where: {
+                user_id: req.user.id,
+            },
+            include: [{
+                model: DiaryRoom,
+                where: {
+                    date: {
+                        [Op.like]: "%" + date + "%"
+                    },
+                    lock: false
+                },
+                include: [{
+                    model: Bookmark
+                }]
+            }],
+            order: ['id'],
+        })
+        res.status(201).json(calender);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
 router.get("/bookmark", async (req, res, next) => {
     try {
         const bookmark = await Bookmark.findAll({
@@ -31,6 +59,25 @@ router.get("/bookmark", async (req, res, next) => {
         next(err);
     }
 });//주인 정보와 필요한 정보 정제 필요
+
+router.get("/bookmarkList", async (req, res, next) => {
+    try {
+        const bookmark = await Bookmark.findAll({
+            include: [{
+                model: DiaryRoom
+            }],
+            where: {
+                user_id: req.user.id
+            },
+            order: [['id', 'DESC']],
+            limit: 5
+        })
+        res.status(201).json(bookmark);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
 
 router.get("/inProgress", async (req, res, next) => {
     try {
@@ -53,6 +100,27 @@ router.get("/inProgress", async (req, res, next) => {
         next(err);
     }
 });// 현재 맴버가 정립되지 않아서 게스트 테스트 필요 + 주인 정보와 필요한 정보 정제 필요
+
+router.get("/inProgressList", async (req, res, next) => {
+    try {
+        const room = await Member.findAll({
+            where: {
+                user_id: req.user.id,
+            },
+            include: [{
+                model: DiaryRoom,
+                where: {
+                    lock: false
+                }
+            }],
+            order: [['id', 'DESC']],
+        })
+        res.status(201).json(room);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
 
 router.get("/search", async (req, res, next) => {
     try {
