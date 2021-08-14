@@ -22,7 +22,7 @@ router.post("/", upload.single('imgUrl'), async (req, res, next) => { // 일기 
                 imgUrl: image,
                 text: null,
                 user_id: req.user.id,
-                room_id: req.body.room_id,
+                room_id: req.headers.room_id,
             });
             res.status(201).send("이미지 업로드 성공");
         } else {
@@ -30,7 +30,7 @@ router.post("/", upload.single('imgUrl'), async (req, res, next) => { // 일기 
                 imgUrl: null,
                 text: req.body.text,
                 user_id: req.user.id,
-                room_id: req.body.room_id,
+                room_id: req.headers.room_id,
             });
             res.status(201).send("텍스트 업로드 성공");
         }
@@ -73,14 +73,14 @@ router.patch("/:contentIdx", upload.single('imgUrl'), async (req, res, next) => 
     try {
         if (req.file) {
             const key = await DiaryContent.findOne({
-                attributes: ['imgUrl'],
+                attributes: ['imgUrl', 'room_id'],
                 where: {
                     id: req.params.contentIdx
                 }
             }).then((key) => {
                 s3.deleteObject({
                     Bucket: s3bucket,
-                    Key: key.dataValues.imgUrl.split('/')[3]
+                    Key: key.dataValues.room_id + '/' + key.dataValues.imgUrl.split('/')[4]
                 },
                     (err, data) => {
                         if (err) {
@@ -111,7 +111,7 @@ router.patch("/:contentIdx", upload.single('imgUrl'), async (req, res, next) => 
 router.delete("/:contentIdx", async (req, res, next) => { // 일기 삭제
     try {
         const key = await DiaryContent.findOne({
-            attributes: ['imgUrl'],
+            attributes: ['imgUrl', 'room_id'],
             where: {
                 id: req.params.contentIdx
             }
@@ -119,7 +119,7 @@ router.delete("/:contentIdx", async (req, res, next) => { // 일기 삭제
             if (key.dataValues.imgUrl) {
                 s3.deleteObject({
                     Bucket: s3bucket,
-                    Key: key.dataValues.imgUrl.split('/')[3]
+                    Key: key.dataValues.room_id + '/' + key.dataValues.imgUrl.split('/')[4]
                 },
                     (err, data) => {
                         if (err) {

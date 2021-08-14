@@ -11,10 +11,11 @@ router.get('/', function (req, res) {
   res.send('Hello World!');
 });
 
-router.use('/user', require('./user'));
+router.use('/users', require('./users'));
 router.use('/auth', require('./auth'));
 router.use('/diaries', require('./diaries'));
 router.use('/contents', require('./contents'));
 router.use('/main', require('./main'));
+router.use('/uploads', require('./uploads'));
 
 module.exports = router;

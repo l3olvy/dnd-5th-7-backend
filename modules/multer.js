@@ -8,7 +8,9 @@ const upload = multer({
 		bucket: s3bucket,
 		acl: 'public-read',
 		key: function (req, file, cb) {
-			cb(null, Date.now() + '.' + file.originalname.split('.').pop());
+			if (req.headers.room_id) {
+				cb(null, `${req.headers.room_id}/${Date.now()}.${file.originalname.split('.').pop()}`);
+			}
 		}
 	})
 });

@@ -6,7 +6,9 @@ const User = require('../models/user');
 const router = express.Router();
 const DiaryRoom = require('../models/diaryRoom');
 const Member = require('../models/member');
+const Bookmark = require('../models/bookmark');
 //const diariesController = require('../controllers/diaries.ctrl');
+const { s3, s3bucket } = require('../config/s3');
 
 router.get("/:dairyIdx", async (req, res, next) => {
 	try {
@@ -36,6 +38,37 @@ router.post("/", async (req, res, next) => {
 			})
 		});
 		res.status(201).json(room);
+	} catch (err) {
+		console.error(err);
+		next(err);
+	}
+});
+
+router.post("/bookmark", async (req, res, next) => { // 즐겨찾기 등록
+	try {
+		const bookmark = await Bookmark.findAll({
+			where: {
+				user_id: req.user.id,
+				room_id: req.body.room_id,
+			}
+		})
+		if (bookmark.dataValues) {
+			await Bookmark.destroy({
+				where: {
+					user_id: req.user.id,
+					room_id: req.body.room_id,
+				}
+			}).then(() => {
+				res.status(200).json("즐겨찾기 등록 해제");
+			})
+		} else {
+			await Bookmark.create({
+				user_id: req.user.id,
+				room_id: req.body.room_id,
+			}).then(() => {
+				res.status(201).json("즐겨찾기 등록");
+			})
+		}
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -92,6 +125,7 @@ router.delete("/:dairyIdx", async (req, res, next) => {
 						id: req.params.dairyIdx
 					}
 				});
+				emptyBucket(req.params.dairyIdx);
 				res.send("방 지워짐");
 			}
 			else {
@@ -104,5 +138,36 @@ router.delete("/:dairyIdx", async (req, res, next) => {
 		next(err);
 	}
 });
+
+function emptyBucket(room_id) {
+	let currentData;
+	let params = {
+		Bucket: s3bucket,
+		Prefix: `${room_id}/`
+	};
+
+	return s3.listObjects(params).promise().then(data => {
+		if (data.Contents.length === 0) {
+			throw new Error('List of objects empty.');
+		}
+
+		currentData = data;
+
+		params = { Bucket: s3bucket };
+		params.Delete = { Objects: [] };
+
+		currentData.Contents.forEach(content => {
+			params.Delete.Objects.push({ Key: content.Key });
+		});
+
+		return s3.deleteObjects(params).promise();
+	}).then(() => {
+		if (currentData.Contents.length === 1000) {
+			emptyBucket(s3bucket, callback);
+		} else {
+			return true;
+		}
+	});
+}
 
 module.exports = router;
