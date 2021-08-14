@@ -12,14 +12,14 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/',
 }), (req, res) => {
   console.log("res 값 : ", res);
-  res.redirect('https://dnd-5th-7-frontend-eight.vercel.app/main');
+  res.redirect(`${process.env.FRONT_URL}/main`);
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
   req.logout();
   req.session.destroy(() => {
     res.clearCookie('connect.sid');
-    res.redirect('https://dnd-5th-7-frontend-eight.vercel.app');
+    res.redirect(`${process.env.FRONT_URL}`);
   });
 });
 
