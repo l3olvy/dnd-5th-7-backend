@@ -34,7 +34,7 @@ nunjucks.configure('views', {
 });
 
 app.use(cors({
-	origin: "https://dnd-5th-7-frontend-3ugas3gw7-dndtido.vercel.app",
+	origin: true,
 	credentials: true
 }));
 
