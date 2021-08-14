@@ -35,7 +35,12 @@ nunjucks.configure('views', {
 app.set("trust proxy", 1);
 
 app.use(cors({
-	origin: "https://dnd-5th-7-frontend-eight.vercel.app",
+	origin: [
+		"https://dnd-5th-7-frontend-eight.vercel.app",
+		"https://tido-diary.herokuapp.com",
+		"http://localhost:8080",
+	],
+	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 	credentials: true
 }));
 
