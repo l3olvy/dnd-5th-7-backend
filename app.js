@@ -53,12 +53,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(session({
-	resave: false,
+	resave: true,
 	saveUninitialized: false,
 	secret: process.env.COOKIE_SECRET,
 	cookie: {
+		httpOnly: true,
 		sameSite: 'none',
-		httpsOnly: true,
 		secure: true,
 	},
 }));
