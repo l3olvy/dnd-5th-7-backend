@@ -17,7 +17,6 @@ module.exports = () => {
         done(null, exUser);
       } else {
         const newUser = await User.create({
-          email: profile._json && profile._json.kaccount_email,
           nick: profile.displayName,
           snsId: profile.id,
         });
