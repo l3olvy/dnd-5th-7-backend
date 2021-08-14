@@ -33,14 +33,8 @@ nunjucks.configure('views', {
 	watch: true,
 });
 app.set("trust proxy", 1);
-
 app.use(cors({
-	origin: [
-		"https://dnd-5th-7-frontend-eight.vercel.app",
-		"https://tido-diary.herokuapp.com",
-		"http://localhost:8080",
-	],
-	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+	origin: "https://dnd-5th-7-frontend-eight.vercel.app",
 	credentials: true
 }));
 
@@ -64,9 +58,8 @@ app.use(session({
 	secret: process.env.COOKIE_SECRET,
 	cookie: {
 		sameSite: 'none',
-		httpOnly: true,
+		httpsOnly: true,
 		secure: false,
-		domain: '.dnd-5th-7-frontend-eight.vercel.app',
 	},
 }));
 app.use(passport.initialize());
