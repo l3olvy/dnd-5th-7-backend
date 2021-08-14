@@ -35,7 +35,7 @@ nunjucks.configure('views', {
 app.set("trust proxy", 1);
 
 app.use(cors({
-	origin: "https://dnd-5th-7-frontend-3ugas3gw7-dndtido.vercel.app",
+	origin: "https://dnd-5th-7-frontend-eight.vercel.app",
 	credentials: true
 }));
 

@@ -64,7 +64,7 @@ router.delete("/me", async (req, res, next) => { // 회원 탈퇴
             req.logout();
             req.session.destroy(() => {
                 res.clearCookie('connect.sid');
-                res.redirect('https://dnd-5th-7-frontend-3ugas3gw7-dndtido.vercel.app');
+                res.redirect('https://dnd-5th-7-frontend-eight.vercel.app');
             });
         });
 
