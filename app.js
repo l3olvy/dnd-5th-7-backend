@@ -18,6 +18,7 @@ const authRouter = require('./routes/auth');
 const diariesRouter = require('./routes/diaries');
 const noticesRouter = require('./routes/notices');
 const contentsRouter = require('./routes/contents');
+const membersRouter = require('./routes/members');
 const mainRouter = require('./routes/main');
 const uploadsRouter = require('./routes/uploads');
 const { sequelize } = require('./models');
@@ -73,6 +74,7 @@ app.use('/contents', contentsRouter);
 app.use('/notices', noticesRouter);
 app.use('/main', mainRouter);
 app.use('/uploads', uploadsRouter);
+app.use('/members', membersRouter);
 
 app.use((req, res, next) => {
 	const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

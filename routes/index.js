@@ -18,5 +18,6 @@ router.use('/contents', require('./contents'));
 router.use('/main', require('./main'));
 router.use('/uploads', require('./uploads'));
 router.use('/notices', require('./notices'));
+router.use('/members', require('./members'));
 
 module.exports = router;
