@@ -15,23 +15,13 @@ module.exports = class User extends Sequelize.Model {
         type: Sequelize.STRING(200),
         allowNull: true,
       },
-      roomClose: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
-      roomDelete: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
     }, {
       sequelize,
       timestamps: true,
       underscored: false,
       modelName: 'User',
       tableName: 'user',
-      paranoid: true,
+      paranoid: false,
       charset: 'utf8',
       collate: 'utf8_general_ci',
     });

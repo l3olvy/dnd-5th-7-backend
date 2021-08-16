@@ -15,11 +15,6 @@ module.exports = class DiaryRoom extends Sequelize.Model {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      lock: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-      },
     }, {
       sequelize,
       timestamps: false,

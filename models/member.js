@@ -8,10 +8,6 @@ module.exports = class Member extends Sequelize.Model {
         allowNull: false,
         defaultValue: false,
       },
-      guest_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-      },
     }, {
       sequelize,
       timestamps: false,
