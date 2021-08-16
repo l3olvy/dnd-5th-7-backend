@@ -11,6 +11,10 @@ module.exports = class DiaryContent extends Sequelize.Model {
         type: Sequelize.STRING(200),
         allowNull: true,
       },
+      date: {
+        type: Sequelize.STRING(120),
+        allowNull: false,
+      },
     }, {
       sequelize,
       timestamps: false,
