@@ -9,6 +9,7 @@ const Member = require('../models/member');
 const Bookmark = require('../models/bookmark');
 //const diariesController = require('../controllers/diaries.ctrl');
 const { s3, s3bucket } = require('../config/s3');
+const Alarm = require('../models/alarm');
 
 router.get("/:dairyIdx", async (req, res, next) => {
 	try {
@@ -36,8 +37,8 @@ router.post("/", async (req, res, next) => {
 				user_id: req.user.id,
 				room_id: room.id,
 			})
+			res.status(201).json(room.id);
 		});
-		res.status(201).json(room);
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -52,7 +53,7 @@ router.post("/bookmark", async (req, res, next) => { // 즐겨찾기 등록
 				room_id: req.body.room_id,
 			}
 		})
-		if (bookmark.dataValues) {
+		if (bookmark.length !== 0) {
 			await Bookmark.destroy({
 				where: {
 					user_id: req.user.id,
@@ -111,28 +112,38 @@ router.patch("/:dairyIdx", async (req, res, next) => {
 
 router.delete("/:dairyIdx", async (req, res, next) => {
 	try {
-		const diaryIdx = req.params.dairyIdx;
-		const admin = await Member.findOne({
-			attributes: ['admin'],
+		let diaryIdx = req.params.dairyIdx;
+		const title = await DiaryRoom.findOne({
+			attributes: ['title'],
+			where: {
+				id: diaryIdx
+			},
+			raw: true,
+		})
+		const member = await Member.findAll({
+			attributes: ['user_id'],
 			where: {
 				room_id: diaryIdx,
-				user_id: req.user.id,
-			}
-		}).then((admin) => {
-			if (admin.dataValues.admin === true) {
-				DiaryRoom.destroy({
-					where: {
-						id: req.params.dairyIdx
-					}
-				});
-				emptyBucket(req.params.dairyIdx);
+				admin: false,
+			},
+			raw: true,
+		}).then((member) => {
+			const memberArray = member.map(function (value, index) {
+				value.title = title.title;
+				value.delete = getCurrentDate();
+				return value;
+			})
+			Alarm.bulkCreate(memberArray);
+			DiaryRoom.destroy({
+				where: {
+					id: diaryIdx
+				}
+			}).then(() => {
+				emptyBucket(diaryIdx);
 				res.send("방 지워짐");
-			}
-			else {
-				res.send("삭제권한 없음");
-			}
-		})
+			})
 
+		})
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -147,27 +158,42 @@ function emptyBucket(room_id) {
 	};
 
 	return s3.listObjects(params).promise().then(data => {
-		if (data.Contents.length === 0) {
-			throw new Error('List of objects empty.');
+		if (data.Contents.length !== 0) {
+			currentData = data;
+
+			params = { Bucket: s3bucket };
+			params.Delete = { Objects: [] };
+
+			currentData.Contents.forEach(content => {
+				params.Delete.Objects.push({ Key: content.Key });
+			});
+
+			return s3.deleteObjects(params).promise();
 		}
 
-		currentData = data;
 
-		params = { Bucket: s3bucket };
-		params.Delete = { Objects: [] };
-
-		currentData.Contents.forEach(content => {
-			params.Delete.Objects.push({ Key: content.Key });
-		});
-
-		return s3.deleteObjects(params).promise();
 	}).then(() => {
-		if (currentData.Contents.length === 1000) {
-			emptyBucket(s3bucket, callback);
-		} else {
-			return true;
+		if (currentData) {
+			if (currentData.Contents.length === 1000) {
+				emptyBucket(s3bucket, callback);
+			} else {
+				return true;
+			}
 		}
 	});
+}
+
+function getCurrentDate() {
+	var date = new Date();
+	var year = date.getFullYear().toString();
+
+	var month = date.getMonth() + 1;
+	month = month < 10 ? '0' + month.toString() : month.toString();
+
+	var day = date.getDate();
+	day = day < 10 ? '0' + day.toString() : day.toString();
+
+	return year + '-' + month + '-' + day;
 }
 
 module.exports = router;

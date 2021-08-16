@@ -7,6 +7,7 @@ const DiaryContent = require('./diaryContent');
 const Member = require('./member');
 const Bookmark = require('./bookmark');
 const Notice = require('./notice');
+const Alarm = require('./alarm');
 
 const db = {};
 const sequelize = new Sequelize(
@@ -20,6 +21,7 @@ db.DiaryContent = DiaryContent;
 db.Member = Member;
 db.Bookmark = Bookmark;
 db.Notice = Notice;
+db.Alarm = Alarm;
 
 User.init(sequelize);
 DiaryRoom.init(sequelize);
@@ -27,11 +29,13 @@ DiaryContent.init(sequelize);
 Member.init(sequelize);
 Bookmark.init(sequelize);
 Notice.init(sequelize);
+Alarm.init(sequelize);
 
 User.associate(db);
 DiaryRoom.associate(db);
 DiaryContent.associate(db);
 Member.associate(db);
 Bookmark.associate(db);
+Alarm.associate(db);
 
 module.exports = db;

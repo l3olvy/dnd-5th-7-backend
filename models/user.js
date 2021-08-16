@@ -41,5 +41,6 @@ module.exports = class User extends Sequelize.Model {
     db.User.hasMany(db.DiaryContent, { foreignKey: "user_id", sourceKey: "id" });
     db.User.hasMany(db.Bookmark, { foreignKey: "user_id", sourceKey: "id" });
     db.User.hasMany(db.DiaryRoom, { foreignKey: "user_id", sourceKey: "id" });
+    db.User.hasMany(db.Alarm, { foreignKey: "user_id", sourceKey: "id" });
   }
 };

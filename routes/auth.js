@@ -18,7 +18,7 @@ router.get('/logout', isLoggedIn, (req, res) => {
   req.logout();
   req.session.destroy(() => {
     res.clearCookie('connect.sid');
-    res.redirect(`${process.env.FRONT_URL}`);
+    res.sendStatus(200);
   });
 });
 

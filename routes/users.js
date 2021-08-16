@@ -60,11 +60,10 @@ router.delete("/me", async (req, res, next) => { // 회원 탈퇴
             User.destroy({
                 where: { snsId: response.data.id }
             })
-            res.send("탈퇴됨");
             req.logout();
             req.session.destroy(() => {
                 res.clearCookie('connect.sid');
-                res.redirect(`${process.env.FRONT_URL}`);
+                res.sendStatus(200);
             });
         });
 

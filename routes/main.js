@@ -8,6 +8,7 @@ const DiaryRoom = require('../models/diaryRoom');
 const Member = require('../models/member');
 const Bookmark = require('../models/bookmark');
 const DiaryContent = require('../models/diaryContent');
+const Alarm = require('../models/alarm');
 const sequelize = require("sequelize");
 const Op = sequelize.Op;
 
@@ -271,5 +272,42 @@ router.get("/search", async (req, res, next) => {
         next(err);
     }
 });
+
+router.get("/newAlarm", async (req, res, next) => {
+    try {
+        const newAlarm = await Alarm.count({
+            where: {
+                user_id: req.user.id,
+                read: null
+            },
+        }).then((newAlarm) => {
+            res.send({ "newAlarm": newAlarm });
+        })
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.get("/alarmList", async (req, res, next) => {
+    try {
+        const alarmList = await Alarm.findAll({
+            where: {
+                user_id: req.user.id,
+            },
+        }).then((alarmList) => {
+            res.status(200).json(alarmList);
+            Alarm.update(
+                {
+                    read: true
+                }, {
+                where: { user_id: req.user.id, },
+            })
+        });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});// 현재 맴버가 정립되지 않아서 게스트 테스트 필요 + 주인 정보와 필요한 정보 정제 필요
 
 module.exports = router;
