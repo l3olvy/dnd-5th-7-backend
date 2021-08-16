@@ -27,7 +27,6 @@ router.get("/calender", async (req, res, next) => {
                     date: {
                         [Op.like]: "%" + date + "%"
                     },
-                    lock: false
                 },
                 include: [{
                     model: Bookmark

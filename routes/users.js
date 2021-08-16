@@ -13,7 +13,8 @@ const env = process.env;
 
 router.get("/me", async (req, res, next) => { //본인 회원 정보 불러오기
     try {
-        const user = await User.findAll({
+        const user = await User.findOne({
+            attributes: ['id', 'nick', 'photoUrl'],
             where: {
                 id: req.user.id,
             }
@@ -29,7 +30,7 @@ router.patch("/me", async (req, res, next) => { // 회원 정보 변경
     try {
         User.update({
             nick: req.body.nick,
-            phothUrl: req.body.photoUrl
+            photoUrl: req.body.photoUrl
         }, {
             where: { id: req.user.id }
         })

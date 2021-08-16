@@ -23,18 +23,21 @@ router.post("/", upload.single('imgUrl'), async (req, res, next) => { // 일기 
                 text: null,
                 user_id: req.user.id,
                 room_id: req.headers.room_id,
+                date: getCurrentDate(),
+            }).then(() => {
+                res.status(201).send("이미지 업로드 성공");
             });
-            res.status(201).send("이미지 업로드 성공");
         } else {
             DiaryContent.create({
                 imgUrl: null,
                 text: req.body.text,
                 user_id: req.user.id,
                 room_id: req.headers.room_id,
+                date: getCurrentDate(),
+            }).then(() => {
+                res.status(201).send("텍스트 업로드 성공");
             });
-            res.status(201).send("텍스트 업로드 성공");
         }
-
     } catch (err) {
         console.error(err);
         next(err);
@@ -47,8 +50,9 @@ router.get("/list/:diaryIdx", async (req, res, next) => { // 일기 리스트  �
             where: {
                 room_id: req.params.diaryIdx
             }
+        }).then((diarylist) => {
+            res.status(201).json(diarylist);
         })
-        res.status(201).json(diarylist);
     } catch (err) {
         console.error(err);
         next(err);
@@ -57,12 +61,15 @@ router.get("/list/:diaryIdx", async (req, res, next) => { // 일기 리스트  �
 
 router.get("/:contentIdx", async (req, res, next) => { // 일기 조회
     try {
-        const diary = await DiaryContent.findAll({
+        const diary = await DiaryContent.findOne({
             where: {
                 id: req.params.contentIdx
-            }
+            },
+            raw: true,
+        }).then((diary) => {
+            diary.nick = req.user.nick;
+            res.status(201).json(diary);
         })
-        res.status(201).json(diary);
     } catch (err) {
         console.error(err);
         next(err);
@@ -92,15 +99,21 @@ router.patch("/:contentIdx", upload.single('imgUrl'), async (req, res, next) => 
                 DiaryContent.update({
                     imgUrl: image,
                 },
-                    { where: { id: req.params.contentIdx } });
-                res.status(201).send("이미지 수정 성공");
+                    {
+                        where: { id: req.params.contentIdx }
+                    }
+                ).then(() => {
+                    res.status(201).send("이미지 수정 성공");
+                });
             })
         } else {
             DiaryContent.update({
                 text: req.body.text,
             },
-                { where: { id: req.params.contentIdx } });
-            res.status(201).send("텍스트 수정 성공");
+                { where: { id: req.params.contentIdx } }
+            ).then(() => {
+                res.status(201).send("텍스트 수정 성공");
+            });
         }
     } catch (err) {
         console.error(err);
@@ -129,14 +142,16 @@ router.delete("/:contentIdx", async (req, res, next) => { // 일기 삭제
                     })
                 DiaryContent.destroy({
                     where: { id: req.params.contentIdx }
+                }).then(() => {
+                    res.status(201).send("이미지 삭제 성공");
                 });
-                res.status(201).send("이미지 삭제 성공");
             }
             else {
                 DiaryContent.destroy({
                     where: { id: req.params.contentIdx }
+                }).then(() => {
+                    res.status(201).send("텍스트 삭제 성공");
                 });
-                res.status(201).send("텍스트 삭제 성공");
             }
         })
     } catch (err) {
@@ -144,5 +159,18 @@ router.delete("/:contentIdx", async (req, res, next) => { // 일기 삭제
         next(err);
     }
 });
+
+function getCurrentDate() {
+    var date = new Date();
+    var year = date.getFullYear().toString();
+
+    var month = date.getMonth() + 1;
+    month = month < 10 ? '0' + month.toString() : month.toString();
+
+    var day = date.getDate();
+    day = day < 10 ? '0' + day.toString() : day.toString();
+
+    return year + '-' + month + '-' + day;
+}
 
 module.exports = router;

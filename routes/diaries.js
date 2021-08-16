@@ -13,12 +13,14 @@ const Alarm = require('../models/alarm');
 
 router.get("/:dairyIdx", async (req, res, next) => {
 	try {
-		const room = await DiaryRoom.findAll({
+		const room = await DiaryRoom.findOne({
 			where: {
 				id: req.params.dairyIdx
-			}
+			},
+			raw: true,
+		}).then((room) => {
+			res.status(201).json(room);
 		})
-		res.status(201).json(room);
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -31,13 +33,15 @@ router.post("/", async (req, res, next) => {
 			mood: req.body.mood,
 			date: req.body.date,
 			title: req.body.title,
+			user_id: req.user.id,
 		}).then((room) => {
 			const member = Member.create({
 				admin: true,
 				user_id: req.user.id,
 				room_id: room.id,
+			}).then((member) => {
+				res.status(201).json({ "room_id": room.id });
 			})
-			res.status(201).json(room.id);
 		});
 	} catch (err) {
 		console.error(err);
@@ -92,12 +96,11 @@ router.patch("/:dairyIdx", async (req, res, next) => {
 						mood: req.body.mood,
 						date: req.body.date,
 						title: req.body.title,
-						lock: req.body.lock,
-						close: req.body.close
 					}, {
 					where: { id: diaryIdx },
+				}).then(() => {
+					res.send("수정됨");
 				});
-				res.send("수정됨");
 			}
 			else {
 				res.send("수정권한 없음");
