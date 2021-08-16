@@ -88,9 +88,6 @@ router.get("/inProgress", async (req, res, next) => {
             },
             include: [{
                 model: DiaryRoom,
-                where: {
-                    lock: false
-                }
             }],
             order: [['id', 'DESC']],
             limit: 5
@@ -110,9 +107,6 @@ router.get("/inProgressList", async (req, res, next) => {
             },
             include: [{
                 model: DiaryRoom,
-                where: {
-                    lock: false
-                }
             }],
             order: [['id', 'DESC']],
         })
