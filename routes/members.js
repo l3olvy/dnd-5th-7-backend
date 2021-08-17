@@ -10,7 +10,7 @@ const Member = require('../models/member');
 
 router.get("/:roomIdx", async (req, res, next) => {
 	try {
-		const memberList = await Member.findAll({
+		const memberList = await Member.findAndCountAll({
 			where: {
 				room_id: req.params.roomIdx
 			}
