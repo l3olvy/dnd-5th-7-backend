@@ -9,35 +9,67 @@ const { s3, s3bucket } = require('../config/s3');
 
 const upload = require('../modules/multer');
 
-router.post("/", upload.single('imgUrl'), async (req, res, next) => { // 일기 생성
+router.post("/image", upload.single('imgUrl'), async (req, res, next) => { // 일기 생성
     try {
+        const image = req.file;
+
         if (req.file) {
-            const image = req.file.location;
-
-            /*if (image === undefined) {
-                return res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다."));
-            }*/
-
             DiaryContent.create({
-                imgUrl: image,
-                text: null,
+                imgUrl: image.location,
                 user_id: req.user.id,
                 room_id: req.headers.room_id,
                 date: getCurrentDate(),
             }).then(() => {
                 res.status(201).send("이미지 업로드 성공");
             });
-        } else {
-            DiaryContent.create({
-                imgUrl: null,
-                text: req.body.text,
-                user_id: req.user.id,
-                room_id: req.headers.room_id,
-                date: getCurrentDate(),
-            }).then(() => {
-                res.status(201).send("텍스트 업로드 성공");
-            });
         }
+        else {
+            res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다."));
+        }
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.post("/images", upload.array('imgUrls'), async (req, res, next) => { // 일기 생성
+    try {
+        const image = req.files;
+        if (image) {
+            const imageArray = new Array();
+            const object = new Object();
+
+            image.map((img) => {
+                object.imgUrl = img.location;
+                object.user_id = req.user.id;
+                object.room_id = req.headers.room_id;
+                object.date = getCurrentDate();
+
+                imageArray.push(object);
+            });
+            DiaryContent.bulkCreate(imageArray).then(() => {
+                res.status(201).send("이미지 업로드 성공");
+            });
+        } else {
+            res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다."));
+        }
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+});
+
+router.post("/text", async (req, res, next) => { // 일기 생성 (텍스트)
+    try {
+        DiaryContent.create({
+            text: req.body.text,
+            user_id: req.user.id,
+            room_id: req.headers.room_id,
+            date: getCurrentDate(),
+        }).then(() => {
+            res.status(201).send("텍스트 업로드 성공");
+        });
     } catch (err) {
         console.error(err);
         next(err);
