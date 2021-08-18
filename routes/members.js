@@ -10,10 +10,15 @@ const Member = require('../models/member');
 
 router.get("/:roomIdx", async (req, res, next) => {
 	try {
-		const memberList = await Member.findAll({
+		const memberList = await Member.findAndCountAll({
 			where: {
 				room_id: req.params.roomIdx
-			}
+			},
+			attributes: ['id', 'admin'],
+			include: [{
+				model: User,
+				attributes: ['id', 'nick']
+			}]
 		});
 		res.status(201).json(memberList);
 	} catch (err) {
