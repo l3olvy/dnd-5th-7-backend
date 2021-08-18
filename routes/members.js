@@ -13,7 +13,12 @@ router.get("/:roomIdx", async (req, res, next) => {
 		const memberList = await Member.findAndCountAll({
 			where: {
 				room_id: req.params.roomIdx
-			}
+			},
+			attributes: ['id', 'admin'],
+			include: [{
+				model: User,
+				attributes: ['id', 'nick']
+			}]
 		});
 		res.status(201).json(memberList);
 	} catch (err) {

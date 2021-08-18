@@ -169,7 +169,7 @@ router.get("/search", async (req, res, next) => {
 
         if (desc) {
             if (searchTitle) {
-                const room = await Member.findAndCountAll({
+                const room = await Member.findAll({
                     where: {
                         user_id: req.user.id,
                     },
@@ -190,6 +190,25 @@ router.get("/search", async (req, res, next) => {
                     order: [['id', 'DESC']]
                 });
                 res.status(201).json(room);
+
+                const amount = await Member.count({
+                    where: {
+                        user_id: req.user.id,
+                    },
+                    attributes: ["id", "admin"],
+                    include: [{
+                        model: DiaryRoom,
+                        attributes: ["id", "date", "title",],
+                        where: {
+                            title: {
+                                [Op.like]: "%" + title + "%"
+                            }
+                        }
+                    }],
+                    order: [['id', 'DESC']]
+                });
+
+                console.log(amount);
             }
 
             if (searchContent) {
