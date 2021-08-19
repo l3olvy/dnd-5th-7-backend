@@ -15,9 +15,9 @@ const Op = sequelize.Op;
 
 //const diariesController = require('../controllers/diaries.ctrl');
 
-router.get("/", async (req, res, next) => {
+router.get("/calendar", async (req, res, next) => {
     try {
-        const date = req.body.date;
+        const date = req.params.date;
         const calendar = await Member.findAll({
             where: {
                 user_id: req.user.id,
