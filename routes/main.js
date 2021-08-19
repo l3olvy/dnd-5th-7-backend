@@ -15,7 +15,7 @@ const Op = sequelize.Op;
 
 //const diariesController = require('../controllers/diaries.ctrl');
 
-router.get("/calendar", async (req, res, next) => {
+router.get("/calendar/:date", async (req, res, next) => {
     try {
         const date = req.params.date;
         const calendar = await Member.findAll({
@@ -45,11 +45,12 @@ router.get("/calendar", async (req, res, next) => {
     }
 });
 
-router.get("/calendarDatail", async (req, res, next) => {
+router.get("/calendarDatail/:date/:desc", async (req, res, next) => {
     try {
-        const date = req.body.date;
-        const desc = req.body.desc;
-        if (desc) {
+        const date = req.params.date;
+        const desc = req.params.desc;
+        console.log(desc)
+        if (desc == 'true') {
             const memberList = await DiaryRoom.findAll({
                 where: {
                     date: {
@@ -85,7 +86,7 @@ router.get("/calendarDatail", async (req, res, next) => {
                     }]
                 }],
                 group: "DiaryRoom.id",
-                order: [['id']],
+                order: ['id']
             }).then((memberList) => {
                 res.status(201).json(memberList);
             });
