@@ -38,7 +38,7 @@ app.use(cors({
 	origin: `${process.env.FRONT_URL}`,
 	credentials: true
 }));
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 sequelize.sync({ forTce: false })
 	.then(() => {

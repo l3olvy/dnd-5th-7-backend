@@ -10,14 +10,15 @@ const Bookmark = require('../models/bookmark');
 const DiaryContent = require('../models/diaryContent');
 const Alarm = require('../models/alarm');
 const sequelize = require("sequelize");
+const { Sequelize } = require('sequelize');
 const Op = sequelize.Op;
 
 //const diariesController = require('../controllers/diaries.ctrl');
 
-router.get("/calender", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
         const date = req.body.date;
-        const calender = await Member.findAll({
+        const calendar = await Member.findAll({
             where: {
                 user_id: req.user.id,
             },
@@ -37,36 +38,62 @@ router.get("/calender", async (req, res, next) => {
             }],
             order: ['id'],
         })
-        res.status(201).json(calender);
+        res.status(201).json(calendar);
     } catch (err) {
         console.error(err);
         next(err);
     }
 });
 
-router.get("/calender/:roomIdx", async (req, res, next) => {
-	try {
-        const date = req.body.date
-		const memberList = await DiaryRoom.findAndCountAll({
-			where: {
-                date: {
-                    [Op.like]: "%" + date + "%"
+router.get("/calendarDatail", async (req, res, next) => {
+    try {
+        const date = req.body.date;
+        const desc = req.body.desc;
+        if (desc) {
+            const memberList = await DiaryRoom.findAll({
+                where: {
+                    date: {
+                        [Op.like]: "%" + date + "%"
+                    },
                 },
-            },
-            include: [{
-                model: Member,
-                attributes: ["id", "admin", "user_id"],
                 include: [{
-                    model: User,
-                    attributes: ["photoUrl"]
-                }]
-            }]
-		});
-		res.status(201).json(memberList);
-	} catch (err) {
-		console.error(err);
-		next(err);
-	}
+                    model: Member,
+                    attributes: [[sequelize.fn('COUNT', sequelize.col("Members.id")), "memberCounts"], "admin", "user_id"],
+                    include: [{
+                        model: User,
+                        attributes: ["photoUrl"]
+                    }]
+                }],
+                group: "DiaryRoom.id",
+                order: [['id', 'DESC']],
+            }).then((memberList) => {
+                res.status(201).json(memberList);
+            });
+        } else {
+            const memberList = await DiaryRoom.findAll({
+                where: {
+                    date: {
+                        [Op.like]: "%" + date + "%"
+                    },
+                },
+                include: [{
+                    model: Member,
+                    attributes: [[sequelize.fn('COUNT', sequelize.col("Members.id")), "memberCounts"], "admin", "user_id"],
+                    include: [{
+                        model: User,
+                        attributes: ["photoUrl"]
+                    }]
+                }],
+                group: "DiaryRoom.id",
+                order: [['id']],
+            }).then((memberList) => {
+                res.status(201).json(memberList);
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
 });
 
 router.get("/bookmark", async (req, res, next) => {
@@ -248,7 +275,7 @@ router.get("/search", async (req, res, next) => {
                         model: Member,
                         attributes: ["id", "admin"],
                         include: [{
-                            model: DiaryRoom, 
+                            model: DiaryRoom,
                             required: true,
                             attributes: ["id", "date", "title"],
                             include: [{
@@ -278,8 +305,8 @@ router.get("/search", async (req, res, next) => {
                             }
                         },
                         include: [{
-                        model: DiaryContent,
-                        attributes: ["id", "text", "imgUrl"],
+                            model: DiaryContent,
+                            attributes: ["id", "text", "imgUrl"],
                         }]
                     }],
                     order: ['id']
@@ -324,7 +351,7 @@ router.get("/search", async (req, res, next) => {
                         model: Member,
                         attributes: ["id", "admin"],
                         include: [{
-                            model: DiaryRoom, 
+                            model: DiaryRoom,
                             required: true,
                             attributes: ["id", "date", "title"],
                             include: [{
