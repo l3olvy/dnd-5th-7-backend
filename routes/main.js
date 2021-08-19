@@ -149,7 +149,7 @@ router.get("/inProgress", async (req, res, next) => {
             },
             include: [{
                 model: DiaryRoom,
-                attributes: ["id", "date", "title"]
+                attributes: ["id", "date", "title", "mood"]
             }],
             order: [['id', 'DESC']],
             limit: 5
@@ -216,7 +216,6 @@ router.get("/search", async (req, res, next) => {
                     }],
                     order: [['id', 'DESC']]
                 });
-                res.status(201).json(room);
 
                 const amount = await Member.count({
                     where: {
@@ -235,11 +234,15 @@ router.get("/search", async (req, res, next) => {
                     order: [['id', 'DESC']]
                 });
 
+                const result = []
+                result.push(room, amount)
+
                 console.log(amount);
+                res.status(201).json(result);
             }
 
             if (searchContent) {
-                const room = await Member.findAndCountAll({
+                const room = await Member.findAll({
                     where: {
                         user_id: req.user.id,
                     },
@@ -260,11 +263,12 @@ router.get("/search", async (req, res, next) => {
                     }],
                     order: [['id', 'DESC']]
                 });
+
                 res.status(201).json(room);
             }
 
             if (searchMember) {
-                const room = await User.findAndCountAll({
+                const room = await User.findAll({
                     where: {
                         nick: {
                             [Op.like]: "%" + member + "%"
@@ -287,11 +291,34 @@ router.get("/search", async (req, res, next) => {
                     }],
                     order: [['id', 'DESC']]
                 });
-                res.status(201).json(room);
+                const amount = await User.count({
+                    where: {
+                        nick: {
+                            [Op.like]: "%" + member + "%"
+                        }
+                    },
+                    attributes: ["id", "nick"],
+                    include: [{
+                        model: Member,
+                        attributes: ["id", "admin"],
+                        include: [{
+                            model: DiaryRoom, 
+                            required: true,
+                            attributes: ["id", "date", "title"],
+                        }]
+                    }],
+                    order: [['id', 'DESC']]
+                });
+
+                const result = []
+                result.push(room, amount)
+
+                console.log(amount);
+                res.status(201).json(result);
             }
         } else {
             if (searchTitle) {
-                const room = await Member.findAndCountAll({
+                const room = await Member.findAll({
                     where: {
                         user_id: req.user.id,
                     },
@@ -311,7 +338,29 @@ router.get("/search", async (req, res, next) => {
                     }],
                     order: ['id']
                 });
-                res.status(201).json(room);
+                
+                const amount = await Member.count({
+                    where: {
+                        user_id: req.user.id,
+                    },
+                    attributes: ["id", "admin"],
+                    include: [{
+                        model: DiaryRoom,
+                        attributes: ["id", "date", "title",],
+                        where: {
+                            title: {
+                                [Op.like]: "%" + title + "%"
+                            }
+                        }
+                    }],
+                    order: [['id', 'DESC']]
+                });
+
+                const result = []
+                result.push(room, amount)
+
+                console.log(amount);
+                res.status(201).json(result);
             }
 
             if (searchContent) {
@@ -340,7 +389,7 @@ router.get("/search", async (req, res, next) => {
             }
 
             if (searchMember) {
-                const room = await User.findAndCountAll({
+                const room = await User.findAll({
                     where: {
                         nick: {
                             [Op.like]: "%" + member + "%"
@@ -363,7 +412,30 @@ router.get("/search", async (req, res, next) => {
                     }],
                     order: ['id']
                 });
-                res.status(201).json(room);
+
+                const amount = await User.count({
+                    where: {
+                        nick: {
+                            [Op.like]: "%" + member + "%"
+                        }
+                    },
+                    attributes: ["id", "nick"],
+                    include: [{
+                        model: Member,
+                        attributes: ["id", "admin"],
+                        include: [{
+                            model: DiaryRoom, 
+                            required: true,
+                            attributes: ["id", "date", "title"],
+                        }]
+                    }],
+                    order: [['id', 'DESC']]
+                });
+
+                const result = []
+                result.push(room, amount)
+
+                res.status(201).json(result);
             }
         }
 
