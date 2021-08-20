@@ -19,8 +19,9 @@ router.get("/:roomIdx", async (req, res, next) => {
 				model: User,
 				attributes: ['id', 'nick']
 			}]
-		});
-		res.status(201).json(memberList);
+		}).then((memberList) => {
+			res.status(201).json(memberList);
+		})
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -33,8 +34,9 @@ router.post("/", async (req, res, next) => {
 			admin: false,
             user_id: req.user.id,
             room_id: req.body.room_id,
-		});
-		res.status(201).json();
+		}).then(() => {
+			res.status(201).json();
+		})
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -47,8 +49,9 @@ router.delete("/:memberIdx", async (req, res, next) => {
 			where: {
 				id: req.params.memberIdx
 			}
-		});
+		}).then(() => {
 		res.send("맴버 지워짐");
+		})
 	} catch (err) {
 		console.error(err);
 		next(err);

@@ -11,8 +11,9 @@ const Member = require('../models/member');
 router.get("/", async (req, res, next) => {
 	try {
 		const notice = await Notice.findAll({
+		}).then((notice) => {
+			res.status(201).json(notice);
 		})
-		res.status(201).json(notice);
 	} catch (err) {
 		console.error(err);
 		next(err);
@@ -25,8 +26,9 @@ router.get("/:noticeIdx", async (req, res, next) => {
 			where: {
 				id: req.params.noticeIdx
 			}
+		}).then((notice) => {
+			res.status(201).json(notice);
 		})
-		res.status(201).json(notice);
 	} catch (err) {
 		console.error(err);
 		next(err);
