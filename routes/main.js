@@ -45,52 +45,27 @@ router.get("/calendar/:date", async (req, res, next) => {
     }
 });
 
-router.get("/calendarDatail/:date/:desc", async (req, res, next) => {
+router.get("/calendarDatail/:date", async (req, res, next) => {
     try {
         const date = req.params.date;
-        const desc = req.params.desc;
-        console.log(desc)
-        if (desc == 'true') {
-            const memberList = await DiaryRoom.findAll({
-                where: {
-                    date: {
-                        [Op.like]: "%" + date + "%"
-                    },
-                },
+
+        const memberList = await DiaryRoom.findAll({
+            include: [{
+                model: Member,
+                attributes: ["id", "admin", "user_id",],
                 include: [{
-                    model: Member,
-                    attributes: [[sequelize.fn('COUNT', sequelize.col("Members.id")), "memberCounts"], "admin", "user_id"],
-                    include: [{
-                        model: User,
-                        attributes: ["photoUrl"]
-                    }]
+                    model: User,
+                    attributes: ["photoUrl"]
                 }],
-                group: "DiaryRoom.id",
-                order: [['id', 'DESC']],
-            }).then((memberList) => {
-                res.status(201).json(memberList);
-            });
-        } else {
-            const memberList = await DiaryRoom.findAll({
-                where: {
-                    date: {
-                        [Op.like]: "%" + date + "%"
-                    },
+            }],
+            where: {
+                date: {
+                    [Op.like]: "%" + date + "%"
                 },
-                include: [{
-                    model: Member,
-                    attributes: [[sequelize.fn('COUNT', sequelize.col("Members.id")), "memberCounts"], "admin", "user_id"],
-                    include: [{
-                        model: User,
-                        attributes: ["photoUrl"]
-                    }]
-                }],
-                group: "DiaryRoom.id",
-                order: ['id']
-            }).then((memberList) => {
-                res.status(201).json(memberList);
-            });
-        }
+            },
+        }).then((memberList) => {
+            res.status(201).json(memberList);
+        })
     } catch (err) {
         console.error(err);
         next(err);
@@ -118,23 +93,51 @@ router.get("/bookmark", async (req, res, next) => {
     }
 });
 
-router.get("/bookmarkList", async (req, res, next) => {
+router.get("/bookmarkList/:desc", async (req, res, next) => {
     try {
-        const bookmark = await Bookmark.findAll({
-            include: [{
-                model: DiaryRoom,
+        if (req.params.desc == 'true') {
+            const bookmark = await Bookmark.findAll({
+                attributes: ["id"],
                 include: [{
-                    model: DiaryContent,
-                    attributes: ["id", "text", "imgUrl", "date"]
-                }]
-            }],
-            where: {
-                user_id: req.user.id
-            },
-            order: [['id', 'DESC']],
-            limit: 5
-        })
-        res.status(201).json(bookmark);
+                    model: DiaryRoom,
+                    include: [{
+                        model: Member,
+                        attributes: ["user_id"],
+                        include: [{
+                            model: User,
+                            attributes: ["photoUrl"]
+                        }]
+                    }]
+                }],
+                where: {
+                    user_id: req.user.id
+                },
+                order: [[DiaryRoom, 'date', 'DESC']],
+            }).then((bookmark) => {
+                res.status(201).json(bookmark);
+            })
+        } else {
+            const bookmark = await Bookmark.findAll({
+                attributes: [],
+                include: [{
+                    model: DiaryRoom,
+                    include: [{
+                        model: Member,
+                        attributes: ["user_id"],
+                        include: [{
+                            model: User,
+                            attributes: ["photoUrl"]
+                        }]
+                    }]
+                }],
+                where: {
+                    user_id: req.user.id
+                },
+                order: [[DiaryRoom, 'date', 'ASC']],
+            }).then((bookmark) => {
+                res.status(201).json(bookmark);
+            })
+        }
     } catch (err) {
         console.error(err);
         next(err);
@@ -162,23 +165,51 @@ router.get("/inProgress", async (req, res, next) => {
     }
 });
 
-router.get("/inProgressList", async (req, res, next) => {
+router.get("/inProgressList/:desc", async (req, res, next) => {
     try {
-        const room = await Member.findAll({
-            attributes: ["id", "admin"],
-            where: {
-                user_id: req.user.id,
-            },
-            include: [{
-                model: DiaryRoom,
+        if (req.params.desc == "true") {
+            const room = await Member.findAll({
+                attributes: ["id"],
+                where: {
+                    user_id: req.user.id,
+                },
                 include: [{
-                    model: DiaryContent,
-                    attributes: ["id", "text", "imgUrl", "date"]
-                }]
-            }],
-            order: [['id', 'DESC']],
-        })
-        res.status(201).json(room);
+                    model: DiaryRoom,
+                    include: [{
+                        model: Member,
+                        attributes: ["user_id",],
+                        include: [{
+                            model: User,
+                            attributes: ["photoUrl"]
+                        }]
+                    }]
+                }],
+                order: [[DiaryRoom, 'date', 'DESC']],
+            }).then((room) => {
+                res.status(201).json(room);
+            })
+        } else {
+            const room = await Member.findAll({
+                attributes: ["id"],
+                where: {
+                    user_id: req.user.id,
+                },
+                include: [{
+                    model: DiaryRoom,
+                    include: [{
+                        model: Member,
+                        attributes: ["user_id",],
+                        include: [{
+                            model: User,
+                            attributes: ["photoUrl"]
+                        }]
+                    }]
+                }],
+                order: [[DiaryRoom, 'date', 'ASC']],
+            }).then((room) => {
+                res.status(201).json(room);
+            })
+        }
     } catch (err) {
         console.error(err);
         next(err);
@@ -290,7 +321,6 @@ router.post("/search", async (req, res, next) => {
                             }]
                         }]
                     }],
-                    order: [['id', 'DESC']]
                 });
                 const amount = await User.count({
                     where: {
@@ -308,7 +338,6 @@ router.post("/search", async (req, res, next) => {
                             attributes: ["id", "date", "title"],
                         }]
                     }],
-                    order: [['id', 'DESC']]
                 });
 
                 const result = []
@@ -411,7 +440,6 @@ router.post("/search", async (req, res, next) => {
                             }]
                         }]
                     }],
-                    order: ['id']
                 });
 
                 const amount = await User.count({
@@ -430,7 +458,6 @@ router.post("/search", async (req, res, next) => {
                             attributes: ["id", "date", "title"],
                         }]
                     }],
-                    order: [['id', 'DESC']]
                 });
 
                 const result = []
