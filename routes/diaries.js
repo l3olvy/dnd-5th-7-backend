@@ -11,15 +11,29 @@ const Bookmark = require('../models/bookmark');
 const { s3, s3bucket } = require('../config/s3');
 const Alarm = require('../models/alarm');
 
-router.get("/:dairyIdx", async (req, res, next) => {
+router.get("/:diaryIdx", async (req, res, next) => {
 	try {
 		const room = await DiaryRoom.findOne({
 			where: {
-				id: req.params.dairyIdx
+				id: req.params.diaryIdx
 			},
 			raw: true,
 		}).then((room) => {
-			res.status(201).json(room);
+			const bookmark = Bookmark.findOne({
+				where: {
+					user_id: req.user.id,
+					room_id: req.params.diaryIdx,
+				}
+			}).then((bookmark) => {
+				if (bookmark === null) {
+					room.bookmark = false;
+					res.status(201).json(room);
+				} else {
+					room.bookmark = true;
+					res.status(201).json(room);
+				}
+			}
+			);
 		})
 	} catch (err) {
 		console.error(err);
@@ -80,9 +94,9 @@ router.post("/bookmark", async (req, res, next) => { // 즐겨찾기 등록
 	}
 });
 
-router.patch("/:dairyIdx", async (req, res, next) => {
+router.patch("/:diaryIdx", async (req, res, next) => {
 	try {
-		const diaryIdx = req.params.dairyIdx;
+		const diaryIdx = req.params.diaryIdx;
 		const admin = await Member.findOne({
 			attributes: ['admin'],
 			where: {
@@ -113,9 +127,9 @@ router.patch("/:dairyIdx", async (req, res, next) => {
 	}
 });
 
-router.delete("/:dairyIdx", async (req, res, next) => {
+router.delete("/:diaryIdx", async (req, res, next) => {
 	try {
-		let diaryIdx = req.params.dairyIdx;
+		let diaryIdx = req.params.diaryIdx;
 		const title = await DiaryRoom.findOne({
 			attributes: ['title'],
 			where: {
