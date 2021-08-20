@@ -185,7 +185,7 @@ router.get("/inProgressList", async (req, res, next) => {
     }
 });
 
-router.get("/search", async (req, res, next) => {
+router.post("/search", async (req, res, next) => {
     try {
         const title = req.body.title;
         const content = req.body.content;
@@ -303,7 +303,7 @@ router.get("/search", async (req, res, next) => {
                         model: Member,
                         attributes: ["id", "admin"],
                         include: [{
-                            model: DiaryRoom, 
+                            model: DiaryRoom,
                             required: true,
                             attributes: ["id", "date", "title"],
                         }]
@@ -339,7 +339,7 @@ router.get("/search", async (req, res, next) => {
                     }],
                     order: ['id']
                 });
-                
+
                 const amount = await Member.count({
                     where: {
                         user_id: req.user.id,
@@ -425,7 +425,7 @@ router.get("/search", async (req, res, next) => {
                         model: Member,
                         attributes: ["id", "admin"],
                         include: [{
-                            model: DiaryRoom, 
+                            model: DiaryRoom,
                             required: true,
                             attributes: ["id", "date", "title"],
                         }]
