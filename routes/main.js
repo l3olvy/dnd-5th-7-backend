@@ -36,9 +36,10 @@ router.get("/calendar/:date", async (req, res, next) => {
                     attributes: ["id"]
                 }]
             }],
-            order: ['id'],
+            order: [[{ model: DiaryRoom },'date', 'ASC']],
+        }).then((calendar) => {
+            res.status(201).json(calendar);
         })
-        res.status(201).json(calendar);
     } catch (err) {
         console.error(err);
         next(err);
@@ -66,7 +67,7 @@ router.get("/calendarDatail/:date/:desc", async (req, res, next) => {
                     }]
                 }],
                 group: "DiaryRoom.id",
-                order: [['id', 'DESC']],
+                order: [['date', 'DESC']],
             }).then((memberList) => {
                 res.status(201).json(memberList);
             });
@@ -86,7 +87,7 @@ router.get("/calendarDatail/:date/:desc", async (req, res, next) => {
                     }]
                 }],
                 group: "DiaryRoom.id",
-                order: ['id']
+                order: [['date', 'ASC']],
             }).then((memberList) => {
                 res.status(201).json(memberList);
             });
@@ -103,15 +104,16 @@ router.get("/bookmark", async (req, res, next) => {
             attributes: [],
             include: [{
                 model: DiaryRoom,
-                attributes: ["id", "date", "title"]
+                attributes: ["id", "date", "title", "mood"]
             }],
             where: {
                 user_id: req.user.id
             },
-            order: [['id', 'DESC']],
+            order: [[{ model: DiaryRoom },'date', 'DESC']],
             limit: 5
+        }).then((bookmark) => {
+            res.status(201).json(bookmark);
         })
-        res.status(201).json(bookmark);
     } catch (err) {
         console.error(err);
         next(err);
@@ -131,10 +133,11 @@ router.get("/bookmarkList", async (req, res, next) => {
             where: {
                 user_id: req.user.id
             },
-            order: [['id', 'DESC']],
+            order: [[{ model: DiaryRoom },'date', 'DESC']],
             limit: 5
+        }).then((bookmark) => {
+            res.status(201).json(bookmark);
         })
-        res.status(201).json(bookmark);
     } catch (err) {
         console.error(err);
         next(err);
@@ -152,10 +155,11 @@ router.get("/inProgress", async (req, res, next) => {
                 model: DiaryRoom,
                 attributes: ["id", "date", "title", "mood"]
             }],
-            order: [['id', 'DESC']],
+            order: [[{ model: DiaryRoom },'date', 'DESC']],
             limit: 5
+        }).then((room) => {
+            res.status(201).json(room);
         })
-        res.status(201).json(room);
     } catch (err) {
         console.error(err);
         next(err);
@@ -176,16 +180,17 @@ router.get("/inProgressList", async (req, res, next) => {
                     attributes: ["id", "text", "imgUrl", "date"]
                 }]
             }],
-            order: [['id', 'DESC']],
+            order: [[{ model: DiaryRoom },'date', 'DESC']],
+        }).then((room) => {
+            res.status(201).json(room);
         })
-        res.status(201).json(room);
     } catch (err) {
         console.error(err);
         next(err);
     }
 });
 
-router.get("/search", async (req, res, next) => {
+router.post("/search", async (req, res, next) => {
     try {
         const title = req.body.title;
         const content = req.body.content;
@@ -215,7 +220,7 @@ router.get("/search", async (req, res, next) => {
                             attributes: ["id", "text", "imgUrl"],
                         }]
                     }],
-                    order: [['id', 'DESC']]
+                    order: [[{ model: DiaryRoom },'date', 'DESC']],
                 });
 
                 const amount = await Member.count({
@@ -232,7 +237,7 @@ router.get("/search", async (req, res, next) => {
                             }
                         }
                     }],
-                    order: [['id', 'DESC']]
+                    order: [[{ model: DiaryRoom },'date', 'DESC']],
                 });
 
                 const result = []
@@ -245,12 +250,11 @@ router.get("/search", async (req, res, next) => {
             if (searchContent) {
                 const room = await Member.findAll({
                     where: {
-                        user_id: req.user.id,
+                        user_id : req.user.id
                     },
-                    attributes: ["id", "admin"],
                     include: [{
                         model: DiaryRoom,
-                        attributes: ["id", "date", "title",],
+                        where: "DiaryRoom" != null,
                         include: [{
                             model: DiaryContent,
                             where: {
@@ -258,12 +262,11 @@ router.get("/search", async (req, res, next) => {
                                     [Op.like]: "%" + content + "%"
                                 }
                             },
-                            attributes: ["id", "text", "imgUrl"],
+                            required: true
                         }]
-
                     }],
-                    order: [['id', 'DESC']]
-                });
+                    order: [[{ model: DiaryRoom },'date', 'DESC']],
+                })
 
                 res.status(201).json(room);
             }
@@ -281,16 +284,14 @@ router.get("/search", async (req, res, next) => {
                         attributes: ["id", "admin"],
                         include: [{
                             model: DiaryRoom,
-                            required: true,
                             attributes: ["id", "date", "title"],
                             include: [{
                                 model: DiaryContent,
-                                distinct: true,
                                 attributes: ["id", "text", "imgUrl"],
                             }]
                         }]
                     }],
-                    order: [['id', 'DESC']]
+                    // order: [[{ model: DiaryRoom },'date', 'DESC']],
                 });
                 const amount = await User.count({
                     where: {
@@ -303,12 +304,10 @@ router.get("/search", async (req, res, next) => {
                         model: Member,
                         attributes: ["id", "admin"],
                         include: [{
-                            model: DiaryRoom, 
-                            required: true,
+                            model: DiaryRoom,
                             attributes: ["id", "date", "title"],
                         }]
-                    }],
-                    order: [['id', 'DESC']]
+                    }]
                 });
 
                 const result = []
@@ -337,9 +336,9 @@ router.get("/search", async (req, res, next) => {
                             attributes: ["id", "text", "imgUrl"],
                         }]
                     }],
-                    order: ['id']
+                    order: [[{ model: DiaryRoom },'date', 'ASC']],
                 });
-                
+
                 const amount = await Member.count({
                     where: {
                         user_id: req.user.id,
@@ -354,7 +353,7 @@ router.get("/search", async (req, res, next) => {
                             }
                         }
                     }],
-                    order: [['id', 'DESC']]
+                    order: [[{ model: DiaryRoom },'date', 'ASC']],
                 });
 
                 const result = []
@@ -365,14 +364,13 @@ router.get("/search", async (req, res, next) => {
             }
 
             if (searchContent) {
-                const room = await Member.findAndCountAll({
+                const room = await Member.findAll({
                     where: {
-                        user_id: req.user.id,
+                        user_id : req.user.id
                     },
-                    attributes: ["id", "admin"],
                     include: [{
                         model: DiaryRoom,
-                        attributes: ["id", "date", "title",],
+                        where: "DiaryRoom" != null,
                         include: [{
                             model: DiaryContent,
                             where: {
@@ -380,12 +378,12 @@ router.get("/search", async (req, res, next) => {
                                     [Op.like]: "%" + content + "%"
                                 }
                             },
-                            attributes: ["id", "text", "imgUrl"],
+                            required: true
                         }]
-
                     }],
-                    order: ['id']
-                });
+                    order: [[{ model: DiaryRoom },'date', 'ASC']],
+                })
+
                 res.status(201).json(room);
             }
 
@@ -402,16 +400,14 @@ router.get("/search", async (req, res, next) => {
                         attributes: ["id", "admin"],
                         include: [{
                             model: DiaryRoom,
-                            required: true,
                             attributes: ["id", "date", "title"],
                             include: [{
                                 model: DiaryContent,
-                                distinct: true,
                                 attributes: ["id", "text", "imgUrl"],
                             }]
                         }]
                     }],
-                    order: ['id']
+                    // order: [[{ model: DiaryRoom },'date', 'ASC']],
                 });
 
                 const amount = await User.count({
@@ -425,12 +421,10 @@ router.get("/search", async (req, res, next) => {
                         model: Member,
                         attributes: ["id", "admin"],
                         include: [{
-                            model: DiaryRoom, 
-                            required: true,
+                            model: DiaryRoom,
                             attributes: ["id", "date", "title"],
                         }]
                     }],
-                    order: [['id', 'DESC']]
                 });
 
                 const result = []
